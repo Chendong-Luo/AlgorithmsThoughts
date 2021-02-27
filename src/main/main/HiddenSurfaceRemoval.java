@@ -52,7 +52,7 @@ public class HiddenSurfaceRemoval {
 
             // case1
             if (xmin < scene1.get(i).xl && xmin < scene2.get(j).xl) {
-                if (scene1.get(i).xl <= scene2.get(j).xr) {
+                if (scene1.get(i).xl <= scene2.get(j).xl) {
                     xmin = scene1.get(i).xl;
                 } else {
                     xmin = scene2.get(j).xl;
@@ -111,11 +111,7 @@ public class HiddenSurfaceRemoval {
                 xmin = scene1.get(i).xr;
                 i++;
             }
-//            addInstance(new Instance(xmin, scene1.get(i).xr, scene1.get(i).depth, scene1.get(i).color), output);
-//            i++;
-//            if (i < scene1.size()) {
-//                xmin = scene1.get(i).xl;
-//            }
+
         }
 
         while (j < scene2.size()) {
@@ -128,11 +124,7 @@ public class HiddenSurfaceRemoval {
                 xmin = scene2.get(j).xr;
                 j++;
             }
-//            addInstance(new Instance(xmin, scene2.get(j).xr, scene2.get(j).depth, scene2.get(j).color), output);
-//            j++;
-//            if (j < scene2.size()) {
-//                xmin = scene2.get(j).xl;
-//            }
+
         }
 
         return output;
@@ -140,7 +132,15 @@ public class HiddenSurfaceRemoval {
 
 
     public void addInstance (Instance ins, List<Instance> list) {
-        list.add(ins);
+        if (list.size() >= 1) {
+            if (ins.color.equals(list.get(list.size() - 1).color) && ins.xl == list.get(list.size() - 1).xr && ins.depth == list.get(list.size() - 1).depth) {
+                list.get(list.size() - 1).xr = ins.xr;
+            } else {
+                list.add(ins);
+            }
+        } else  {
+            list.add(ins);
+        }
     }
 
     public void printInstance(Instance ins) {
@@ -157,14 +157,16 @@ class runHSR {
         HiddenSurfaceRemoval.Instance ins2 = new HiddenSurfaceRemoval.Instance(9, 10, 6, "red");
         HiddenSurfaceRemoval.Instance ins3 = new HiddenSurfaceRemoval.Instance(0, 4, 3, "blue");
         HiddenSurfaceRemoval.Instance ins4 = new HiddenSurfaceRemoval.Instance(1, 8, 5, "green");
+        HiddenSurfaceRemoval.Instance ins5 = new HiddenSurfaceRemoval.Instance(0, 1, 0, "green");
 
         List<HiddenSurfaceRemoval.Instance> list = new ArrayList<>();
         list.add(ins1);
         list.add(ins2);
         list.add(ins3);
         list.add(ins4);
+        list.add(ins5);
 
-        List<HiddenSurfaceRemoval.Instance> output = hsr.removal(list, 0, 3);
+        List<HiddenSurfaceRemoval.Instance> output = hsr.removal(list, 0, list.size() - 1);
         for (int i = 0; i < output.size(); i++) {
             hsr.printInstance(output.get(i));
         }
